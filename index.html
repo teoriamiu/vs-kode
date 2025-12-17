@@ -1,137 +1,177 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#1e1e1e">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="color-scheme" content="dark">
-  
-  <title>Visual Studio Kode | Editor de Código en el Navegador</title>
-  
-  <meta name="description" content="Visual Studio Kode: El editor de código avanzado, liviano y rápido, directamente en tu navegador. ¡Desarrolla en cualquier lugar!">
-  <meta name="keywords" content="Visual Studio Kode, VS Code, Editor Web, IDE, HTML, CSS, JavaScript, Desarrollo, Online">
-  <meta name="author" content="Agustín Díaz">
-  <meta name="robots" content="index, follow">
-  
-  <link rel="canonical" href="https://vs-kode.netlify.app/"> <link rel="icon" href="favicon-vscode.ico"> <meta property="og:title" content="Visual Studio Kode: Tu IDE Web">
-  <link rel="icon" href="https://i.imgur.com/rhR7Oan.jpeg">
-  
-  <meta property="og:description" content="Escribe, edita y ejecuta código en HTML, CSS, JavaScript y más. ¡La potencia de VS Code, sin instalación, en tu navegador!">
-  <meta property="og:type" content="website">
-  <meta property="og:image" content="https://i.imgur.com/Ml298As.jpeg">
-  <meta property="og:url" content="https://vs-kode.netlify.app/">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#1e1e1e">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="color-scheme" content="dark">
+<title>Visual Studio Kode | Editor de Código en el Navegador</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.1.0/css/all.min.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.54.0-dev-20250930/min/vs/editor/editor.main.css"/>
+<style>
+:root {
+  --toolbar-h: 42px;
+}
 
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.1.0/css/all.min.css"/>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.54.0-dev-20250930/min/vs/editor/editor.main.css"/>
+* {
+  box-sizing: border-box;
+}
 
-  <style>
-    :root { --toolbar-h: 42px; }
+html,
+body {
+  margin: 0;
+  height: 100%;
+  background: #111;
+  font-family: system-ui, sans-serif;
+}
 
-    * { box-sizing: border-box; }
+h1 {
+  margin: 0;
+  font-size: 16px;
+  color: #fff;
+  font-weight: 600;
+}
 
-    html, body {
-      margin: 0;
-      height: 100%;
-      background: #111;
-      font-family: system-ui, sans-serif;
-    }
+#app {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
 
-    h1 {
-      margin: 0;
-      font-size: 16px;
-      color: #fff;
-      font-weight: 600;
-    }
-    
-    #app {
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-    }
+#toolbar {
+  height: var(--toolbar-h);
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  background: #1e1e1e;
+}
 
-    #toolbar {
-      height: var(--toolbar-h);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 0 10px;
-      background: #1e1e1e;
-    }
+.toolbar-actions {
+  margin-left: auto;
+  display: flex;
+  gap: 2px;
+}
 
-    .toolbar-actions {
-      margin-left: auto;
-      display: flex;
-      gap: 8px;
-    }
+#toolbar button {
+  background: #007acc;
+  border: none;
+  color: #fff;
+  padding: 6px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0px;
+  -webkit-tap-highlight-color: transparent;
+}
 
-    #toolbar button {
-      background: #007acc;
-      border: none;
-      color: #fff;
-      padding: 6px 10px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 13px;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      -webkit-tap-highlight-color: transparent;
-    }
+#toolbar button:hover {
+  background: #005a99;
+}
 
-    #toolbar button:hover {
-      background: #005a99;
-    }
+#workspace {
+  flex: 1;
+  display: grid;
+  overflow: hidden;
+}
 
-    #workspace {
-      flex: 1;
-      display: grid;
-      overflow: hidden;
-    }
+#workspace[data-view="split"] {
+  grid-template-columns: 1fr 1fr;
+}
 
-    #workspace[data-view="split"] {
-      grid-template-columns: 1fr 1fr;
-    }
+#workspace[data-view="editor"],
+#workspace[data-view="preview"] {
+  grid-template-columns: 1fr;
+}
 
-    #workspace[data-view="editor"],
-    #workspace[data-view="preview"] {
-      grid-template-columns: 1fr;
-    }
+@media (max-width: 768px) {
+  #workspace[data-view="split"] {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr;
+  }
+}
 
-    @media (max-width: 768px) {
-      #workspace[data-view="split"] {
-        grid-template-columns: 1fr;
-        grid-template-rows: 1fr 1fr;
-      }
-    }
+#editor {
+  min-height: 0;
+}
 
-    #editor {
-      min-height: 0;
-    }
+#preview {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: #fff;
+}
 
-    #preview {
-      width: 100%;
-      height: 100%;
-      border: none;
-      background: #fff;
-    }
+#workspace[data-view="editor"] #preview,
+#workspace[data-view="preview"] #editor {
+  display: none;
+}
 
-    #workspace[data-view="editor"] #preview,
-    #workspace[data-view="preview"] #editor {
-      display: none;
-    }
-  </style>
+/* Modal para cargar HTML */
+#modalLoadHTML {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+#modalLoadHTML .modal-content {
+  background: #1e1e1e;
+  padding: 16px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 700px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+#modalLoadHTML textarea {
+  width: 100%;
+  height: 150px;
+  background: #111;
+  color: #fff;
+  border: 1px solid #444;
+  border-radius: 4px;
+  font-family: monospace;
+  padding: 8px;
+  resize: vertical;
+}
+
+#modalLoadHTML .modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+#modalLoadHTML button {
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  background: #007acc;
+  color: #fff;
+}
+
+#modalLoadHTML button:hover {
+  background: #005a99;
+}
+</style>
 </head>
-
 <body>
 <div id="app">
-
   <div id="toolbar">
     <h1>Vs-Kode</h1>
     <div class="toolbar-actions">
       <button id="btnSplit"><i class="fa-solid fa-columns"></i> Split</button>
       <button id="btnEditor"><i class="fa-solid fa-code"></i> Editor</button>
       <button id="btnPreview"><i class="fa-solid fa-eye"></i> Preview</button>
+      <button id="btnLoadHTML"><i class="fa-solid fa-file-import"></i> Cargar HTML</button>
     </div>
   </div>
 
@@ -140,119 +180,116 @@
     <iframe id="preview"></iframe>
   </div>
 
+  <!-- Modal para pegar HTML -->
+  <div id="modalLoadHTML">
+    <div class="modal-content">
+      <h2>Pega tu HTML</h2>
+      <textarea id="modalTextarea"></textarea>
+      <div class="modal-buttons">
+        <button id="modalCancel">Cancelar</button>
+        <button id="modalLoad">Cargar</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.54.0-dev-20250930/min/vs/loader.js"></script>
-
 <script>
-  require.config({
-    paths: {
-      vs: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.54.0-dev-20250930/min/vs'
-    }
-  });
+require.config({ paths: { vs: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.54.0-dev-20250930/min/vs' } });
 
-  const initialHTML = `<!DOCTYPE html>
+const initialHTML = 
+`<!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Vista previa</title>
-  <style>
-    body {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      font-family: system-ui, sans-serif;
-      gap: 16px;
-      background: white; /* color de fondo */
-    }
+ <meta charset="UTF-8">
+ <title>Vista previa</title>
+<style>
+body {
+color: #000;
+min-height: 100vh;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+font-family: system-ui, sans-serif;
+gap: 16px;
+background: white;
+}
 
-    img {
-      width: 100px;
-      display: block;
-    }
+img {
+width: 100px;
+display: block;
+}
 
-    .acciones {
-      display: flex;
-      gap: 12px;
-    }
+.acciones {
+display: flex;
+gap: 12px;
+}
 
-    button {
-      padding: 8px 14px;
-      font-size: 14px;
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
-    }
-  </style>
+button {
+padding: 2px 6px;
+font-size: 14px;
+cursor: pointer;
+-webkit-tap-highlight-color: transparent;
+}
+</style>
 </head>
 <body>
-
   <h2>¿Qué puede hacer JavaScript?</h2>
-
-  <p>JavaScript puede modificar atributos HTML dinámicamente.</p>
-
-  <img
-    id="miImagen"
-    src="https://www.w3schools.com/js/pic_bulboff.gif"
-    alt="Lámpara apagada"
-  >
-
+    <p>JavaScript puede modificar atributos HTML dinámicamente.</p>
+<img id="miImagen" src="https://www.w3schools.com/js/pic_bulboff.gif" alt="Lámpara apagada">
   <div class="acciones">
-    <button onclick="miImagen.src='https://www.w3schools.com/js/pic_bulbon.gif'">
-      Encender
-    </button>
-
-    <button onclick="miImagen.src='https://www.w3schools.com/js/pic_bulboff.gif'">
-      Apagar
-    </button>
+    <button onclick="miImagen.src='https://www.w3schools.com/js/pic_bulbon.gif'">Encender</button>
+    <button onclick="miImagen.src='https://www.w3schools.com/js/pic_bulboff.gif'">Apagar</button>
   </div>
-
 </body>
 </html>`;
 
-  let editor;
-  const iframe = document.getElementById('preview');
-  const workspace = document.getElementById('workspace');
+let editor;
+const iframe = document.getElementById('preview');
+const workspace = document.getElementById('workspace');
 
-  function renderPreview(html) {
-    iframe.srcdoc = html;
-  }
+function renderPreview(html) { iframe.srcdoc = html; }
+function setView(view) { workspace.dataset.view = view; }
+function debounce(fn, delay = 300) { let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), delay); }; }
 
-  function setView(view) {
-    workspace.dataset.view = view;
-    requestAnimationFrame(() => editor.layout());
-  }
-
-  function debounce(fn, delay = 300) {
-    let t;
-    return (...args) => {
-      clearTimeout(t);
-      t = setTimeout(() => fn(...args), delay);
-    };
-  }
-
-  require(['vs/editor/editor.main'], () => {
-    editor = monaco.editor.create(document.getElementById('editor'), {
-      value: initialHTML,
-      language: 'html',
-      theme: 'vs-dark',
-      wordWrap: 'on',
-      minimap: { enabled: true }
-    });
-
-    renderPreview(initialHTML);
-
-    const updateLive = debounce(() => {
-      renderPreview(editor.getValue());
-    }, 250);
-
-    editor.onDidChangeModelContent(updateLive);
+require(['vs/editor/editor.main'], () => {
+  editor = monaco.editor.create(document.getElementById('editor'), {
+    value: initialHTML,
+    language: 'html',
+    theme: 'vs-dark',
+    wordWrap: 'on',
+    minimap: { enabled: true },
+    automaticLayout: true
   });
 
-  btnSplit.onclick = () => setView('split');
-  btnEditor.onclick = () => setView('editor');
-  btnPreview.onclick = () => setView('preview');
+  renderPreview(initialHTML);
+  const updateLive = debounce(() => { renderPreview(editor.getValue()); }, 250);
+  editor.onDidChangeModelContent(updateLive);
+});
+
+document.getElementById('btnSplit').onclick = () => setView('split');
+document.getElementById('btnEditor').onclick = () => setView('editor');
+document.getElementById('btnPreview').onclick = () => setView('preview');
+
+// Modal para cargar HTML
+const modal = document.getElementById('modalLoadHTML');
+const textarea = document.getElementById('modalTextarea');
+
+document.getElementById('btnLoadHTML').onclick = () => {
+  textarea.value = editor.getValue();
+  modal.style.display = 'flex';
+  textarea.focus();
+};
+
+document.getElementById('modalCancel').onclick = () => modal.style.display = 'none';
+
+document.getElementById('modalLoad').onclick = () => {
+  editor.setValue(textarea.value);
+  renderPreview(textarea.value);
+  setView('split');
+  modal.style.display = 'none';
+};
 </script>
 </body>
 </html>
